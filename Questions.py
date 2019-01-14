@@ -1,35 +1,21 @@
 
-class BaseQuestions:
-    def __init__(self,id,question,answerA,answerB,answerC,answerD,correctAnswer):
-        self.id = id
-        self.question = question
-        self.answerA = answerA
-        self.answerB = answerB
-        self.answerC = answerC
-        self.answerD = answerD
-        self.correctAnswer = correctAnswer
 
-    def getId(self):
-        return self.id
 
-    def getQuestion(self):
-        return self.question
 
-    def getAnswerA(self):
-        return self.answerA
 
-    def getAnswerB(self):
-        return self.answerB
-
-    def getAnswerC(self):
-        return self.answerC
-
-    def getAnswerD(self):
-        return self.answerD
-
-    def getCorrectAnswer(self):
-        return self.correctAnswer
 
 
 if __name__ == '__main__':
-    print('first commit')
+
+    import PyPDF2
+    import collections
+
+    pdf_file = open('123.pdf', 'rb')
+    read_pdf = PyPDF2.PdfFileReader(pdf_file)
+    number_of_pages = read_pdf.getNumPages()
+    c = number_of_pages
+    page = read_pdf.getPage(1)
+    page_content = page.extractText()
+    print (page_content)
+    print(c)
+    
