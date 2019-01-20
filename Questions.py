@@ -74,4 +74,11 @@ if __name__ == '__main__':
         #print (page_content)
 
 
-
+    #read_name_file()
+    #import_data_from_file()
+    #delete_numer_page()
+    #delete_section_page_footer()
+    #divide_data_into_parts()
+    #allocate_data_to_class()
+    #randomize_numer_question()
+    #get_a_question()
