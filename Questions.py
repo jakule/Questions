@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import PyPDF2
-import collections
+import time
 
 
 class Question:
@@ -9,7 +9,6 @@ class Question:
         self.contents = contents
         self.possible_answers = []
         self.correct_answer = correct_answer
-
 
 def fill_data(lines):
     flag =0
@@ -58,16 +57,21 @@ def fill_data(lines):
 def import_data_from_file():
     pdf_file = open('123.pdf', 'rb')
     read_pdf = PyPDF2.PdfFileReader(pdf_file)
-    lines = ['']
-    for page_now in range(1, 3):
-    #for page_now in range(read_pdf.getNumPages()):
+    lines = []
+    '''
+    #for page_now in range(1, 3):
+    for page_now in range(read_pdf.getNumPages()):
         page_content = read_pdf.getPage(page_now).extractText()
         lines.extend(page_content.splitlines())
+    '''
+    lines.extend(a for page_now in range(1, 3) for a in read_pdf.getPage(page_now).extractText().splitlines())
+    #lines.extend(a for page_now in range(read_pdf.getNumPages()) for a in read_pdf.getPage(page_now).extractText().splitlines())
     return(lines)
 
 def remove_page_number(lines):
     lines_now = []
     number_page_inside = 1
+
     for line in lines:
         temp_line = line.replace(' ', '')
         if temp_line == str(number_page_inside):
@@ -75,9 +79,14 @@ def remove_page_number(lines):
             continue
         else:
             lines_now.append(line)
-    return(lines_now)
+    return (lines_now)
+
+def end_of_loop():
+    raise StopIteration
 
 def remove_section_page_footer(lines):
+
+    '''
     temp_lines = []
     for line in lines:  # lines before Question 1 contains something
         temp_line = line.replace(' ', '')
@@ -86,8 +95,10 @@ def remove_section_page_footer(lines):
         else:
             if temp_line != '':
                 temp_lines.append(line)
-    return (delete_page_footer(lines, temp_lines))
+    '''
 
+    temp_lines= list(end_of_loop() if line.replace(' ', '').startswith('Question') else line for line in lines)
+    return (delete_page_footer(lines, temp_lines))
 
 def delete_page_footer(lines,temp_lines):
     lines_now = []
@@ -106,30 +117,32 @@ def delete_page_footer(lines,temp_lines):
 
 if __name__ == '__main__':
 
-
     lines = import_data_from_file()
     lines = remove_page_number(lines)
+    start = time.time()
     lines = remove_section_page_footer(lines)
-    fill_data(lines)
-
-
-    #print(lines_now)
-    #for line in temp_lines: # lines before Question contains something
-
-    #print(temp_lines, len(temp_lines))
+    end = time.time()
+    print(end-start)
     #fill_data(lines)
 
 
+#print(lines_now)
+#for line in temp_lines: # lines before Question contains something
+
+#print(temp_lines, len(temp_lines))
+#fill_data(lines)
 
 
 
-    #read_name_file()
-    #delete_numer_page()
-    #delete_section_page_footer()
-    #divide_data_into_parts()
-    #allocate_data_to_class()
-    #randomize_numer_question()
-    #get_a_question()
+
+
+#read_name_file()
+#delete_numer_page()
+#delete_section_page_footer()
+#divide_data_into_parts()
+#allocate_data_to_class()
+#randomize_numer_question()
+#get_a_question()
 '''
 
 
