@@ -2,6 +2,7 @@
 
 import PyPDF2
 import time
+import argparse
 
 
 class Question:
@@ -58,13 +59,10 @@ def import_data_from_file():
     pdf_file = open('123.pdf', 'rb')
     read_pdf = PyPDF2.PdfFileReader(pdf_file)
     lines = []
-    '''
-    #for page_now in range(1, 3):
-    for page_now in range(read_pdf.getNumPages()):
+    for page_now in range(1, 3):
+    #for page_now in range(read_pdf.getNumPages()):
         page_content = read_pdf.getPage(page_now).extractText()
         lines.extend(page_content.splitlines())
-    '''
-    lines.extend(a for page_now in range(1, 3) for a in read_pdf.getPage(page_now).extractText().splitlines())
     #lines.extend(a for page_now in range(read_pdf.getNumPages()) for a in read_pdf.getPage(page_now).extractText().splitlines())
     return(lines)
 
@@ -85,8 +83,6 @@ def end_of_loop():
     raise StopIteration
 
 def remove_section_page_footer(lines):
-
-    '''
     temp_lines = []
     for line in lines:  # lines before Question 1 contains something
         temp_line = line.replace(' ', '')
@@ -95,57 +91,45 @@ def remove_section_page_footer(lines):
         else:
             if temp_line != '':
                 temp_lines.append(line)
-    '''
-
-    temp_lines= list(end_of_loop() if line.replace(' ', '').startswith('Question') else line for line in lines)
+    #temp_lines= list(end_of_loop() if line.replace(' ', '').startswith('Question') else line for line in lines)
     return (delete_page_footer(lines, temp_lines))
 
 def delete_page_footer(lines,temp_lines):
     lines_now = []
-    flag = 1
+    flag = True
     for line in lines:
         for wrong_lines in temp_lines:
             if line.replace(' ', '') == wrong_lines.replace(' ', ''):
-                flag = 0
-        if flag == 1:
+                flag = False
+        if flag == True:
             lines_now.append(line)
         else:
-            flag = 1
+            flag = True
     return(lines_now)
-
 
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser(description='Program for learning from script')
+    parser.add_argument('-f', default='123.pdf')
+    # , help='Write file name', required=True
+    args = parser.parse_args()
+
+    if args.f == 'Write file name':
+        print('I can tell that no argument was given and I can deal with that here.')
+    elif args.f == '123.pdf':
+        print('Ok')
+    else:
+        print('I can not find it')
+
+
     lines = import_data_from_file()
     lines = remove_page_number(lines)
-    start = time.time()
     lines = remove_section_page_footer(lines)
-    end = time.time()
-    print(end-start)
-    #fill_data(lines)
+    fill_data(lines)
 
 
-#print(lines_now)
-#for line in temp_lines: # lines before Question contains something
-
-#print(temp_lines, len(temp_lines))
-#fill_data(lines)
-
-
-
-
-
-#read_name_file()
-#delete_numer_page()
-#delete_section_page_footer()
 #divide_data_into_parts()
 #allocate_data_to_class()
 #randomize_numer_question()
 #get_a_question()
-'''
-
-
-
-
-'''
