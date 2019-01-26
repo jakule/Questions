@@ -3,6 +3,7 @@
 import PyPDF2
 import time
 import argparse
+from collections import defaultdict
 
 TEMPORARY_MEMORY = [[] for _ in range(24)]
 
@@ -17,18 +18,43 @@ class Question:
 def fill_data(line, flag):
     if (flag != -1) and flag != 0:
         TEMPORARY_MEMORY[flag].append(line)
-    if flag == 0 and not line.replace(' ', "") == "":
-        TEMPORARY_MEMORY[flag].append(line.replace(' ', ""))
+    if flag == 0 and not line.replace(' ', '') == '':
+        TEMPORARY_MEMORY[flag].append(line.replace(' ', ''))
 
+def check_end(line, flag, temp_line, start_for):
 
-def sort_data(
-    lines
-):  # flag =-2 at start, flag = -1 for other flag = 0 for answers, flag = 1 for Question X, flag =2,3,4,5... for A,B,C,D...
+    options = defaultdict(lambda: False, {'A': True, 'B': True, 'C': True, 'D': True, 'E': True, 'F': True,})
+
+    if temp_line.startswith('Question') and not start_for == True:
+        print(TEMPORARY_MEMORY[1][0:1],' ', ''.join(TEMPORARY_MEMORY[0]))
+        for _ in range(24):
+            del TEMPORARY_MEMORY[_][:]
+        flag = -1
+
+    if ':' in ''.join(TEMPORARY_MEMORY[0]) and temp_line != '':
+        print(options[temp_line[0]], '  ', temp_line[0])
+
+        if not temp_line[0] == ',' and not temp_line[0] == 'A'and not temp_line[0] == 'B'and not temp_line[0] == 'C'and not temp_line[0] == 'D'and not temp_line[0] == 'E'and not temp_line[0] == 'F':
+
+            if not TEMPORARY_MEMORY[0] == '':
+
+                for _ in range(24):
+                    del TEMPORARY_MEMORY[_][:]
+                flag = -1
+    return flag
+
+def sort_data(lines):
+    # flag =-2 at start, flag = -1 for other flag = 0 for answers, flag = 1 for Question X, flag =2,3,4,5... for A,B,C,D...
     flag = -2
+    start_for = True
     for line in lines:
+        if line == '':
+            continue
         temp_line = line.replace(' ', "")
+        flag = check_end(line,flag, temp_line,start_for)
         if temp_line.startswith('Question'):
             flag = 1
+            #print(flag, ' ok3 ',line)
         if (
             temp_line.startswith('A.')
             or temp_line.startswith('B.')
@@ -39,20 +65,24 @@ def sort_data(
             or temp_line.startswith('G.')
         ):
             flag += 1
+            #print(flag, ' ok1 ',line)
+
         if temp_line.startswith('Answer:'):
             flag = 0
-
+            #print(flag, ' ok ',line)
+        if start_for == True:
+            start_for = False
         fill_data(line, flag)
         # print(flag, line)
-    print("".join(TEMPORARY_MEMORY[0]))
+    print(''.join(TEMPORARY_MEMORY[0]))
 
 
 def import_data_from_file():
     pdf_file = open('123.pdf', 'rb')
     read_pdf = PyPDF2.PdfFileReader(pdf_file)
     lines = []
-    for page_now in range(1, 25):
-        # for page_now in range(read_pdf.getNumPages()):
+    #for page_now in range(1, 25):
+    for page_now in range(read_pdf.getNumPages()):
         page_content = read_pdf.getPage(page_now).extractText()
         lines.extend(page_content.splitlines())
     # lines.extend(a for page_now in range(read_pdf.getNumPages()) for a in read_pdf.getPage(page_now).extractText().splitlines())
@@ -112,6 +142,7 @@ def delete_empy_lines_at_beginning_of_the_document(lines):
 
 if __name__ == '__main__':
 
+    start= time.time()
     parser = argparse.ArgumentParser(description='Program for learning from script')
     parser.add_argument('-f', default='123.pdf')
     # , help='Write file name', required=True
@@ -129,6 +160,9 @@ if __name__ == '__main__':
     lines = remove_section_page_footer(lines)
     lines = delete_empy_lines_at_beginning_of_the_document(lines)
     sort_data(lines)
+    stop=time.time()
+
+    print('The program worked for %.3f seconds' % (stop-start))
 
 
 # divide_data_into_parts()
