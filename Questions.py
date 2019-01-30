@@ -48,8 +48,6 @@ def sort_data(lines):
     flag = -2
     start_for = True
     for line in lines:
-        if line == '':
-            continue
         temp_line = line.replace(' ', "")
         flag = check_end(line,flag, temp_line,start_for)
         if temp_line.startswith('Question'):
@@ -139,6 +137,14 @@ def delete_empy_lines_at_beginning_of_the_document(lines):
         del lines[0]
     return lines
 
+def delete_empy_lines_in_document(lines):
+    lines_now = []
+    for line in lines:
+        if line == '':
+            continue
+        else:
+            lines_now.append(line)
+    return lines_now
 
 if __name__ == '__main__':
 
@@ -159,6 +165,8 @@ if __name__ == '__main__':
     lines = remove_page_number(lines)
     lines = remove_section_page_footer(lines)
     lines = delete_empy_lines_at_beginning_of_the_document(lines)
+    lines = delete_empy_lines_in_document(lines)
+
     sort_data(lines)
     stop=time.time()
 
