@@ -7,7 +7,6 @@ from collections import defaultdict
 
 TEMPORARY_MEMORY = [[] for _ in range(24)]
 
-
 class Question:
     def __init__(self, contents, correct_answer):
         self.contents = contents
@@ -43,36 +42,23 @@ def check_end(line, flag, temp_line, start_for):
                 flag = -1
     return flag
 
-def sort_data(lines):
+def split_the_base_into_a_single_one(lines):
     # flag =-2 at start, flag = -1 for other flag = 0 for answers, flag = 1 for Question X, flag =2,3,4,5... for A,B,C,D...
-    flag = -2
-    start_for = True
+    flag = -1
+    data_base=[[] for _ in range(200)]
     for line in lines:
         temp_line = line.replace(' ', "")
-        flag = check_end(line,flag, temp_line,start_for)
+        #flag = check_end(line,flag, temp_line,start_for)
         if temp_line.startswith('Question'):
             flag = 1
-            #print(flag, ' ok3 ',line)
-        if (
-            temp_line.startswith('A.')
-            or temp_line.startswith('B.')
-            or temp_line.startswith('C.')
-            or temp_line.startswith('D.')
-            or temp_line.startswith('E.')
-            or temp_line.startswith('F.')
-            or temp_line.startswith('G.')
-        ):
-            flag += 1
-            #print(flag, ' ok1 ',line)
+            print(data_base[flag])
+            print('    ')
+        data_base[flag].append(line)
 
-        if temp_line.startswith('Answer:'):
-            flag = 0
-            #print(flag, ' ok ',line)
-        if start_for == True:
-            start_for = False
-        fill_data(line, flag)
-        # print(flag, line)
-    print(''.join(TEMPORARY_MEMORY[0]))
+
+
+        #fill_data(line, flag)
+
 
 
 def import_data_from_file():
@@ -167,7 +153,7 @@ if __name__ == '__main__':
     lines = delete_empy_lines_at_beginning_of_the_document(lines)
     lines = delete_empy_lines_in_document(lines)
 
-    sort_data(lines)
+    split_the_base_into_a_single_one(lines)
     stop=time.time()
 
     print('The program worked for %.3f seconds' % (stop-start))
@@ -177,3 +163,65 @@ if __name__ == '__main__':
 # allocate_data_to_class()
 # randomize_numer_question()
 # get_a_question()
+
+'''
+def fill_data(line, flag):
+    if (flag != -1) and flag != 0:
+        TEMPORARY_MEMORY[flag].append(line)
+    if flag == 0 and not line.replace(' ', '') == '':
+        TEMPORARY_MEMORY[flag].append(line.replace(' ', ''))
+
+def check_end(line, flag, temp_line, start_for):
+
+    options = defaultdict(lambda: False, {'A': True, 'B': True, 'C': True, 'D': True, 'E': True, 'F': True,})
+
+    if temp_line.startswith('Question') and not start_for == True:
+        print(TEMPORARY_MEMORY[1][0:1],' ', ''.join(TEMPORARY_MEMORY[0]))
+        for _ in range(24):
+            del TEMPORARY_MEMORY[_][:]
+        flag = -1
+
+    if ':' in ''.join(TEMPORARY_MEMORY[0]) and temp_line != '':
+        print(options[temp_line[0]], '  ', temp_line[0])
+
+        if not temp_line[0] == ',' and not temp_line[0] == 'A'and not temp_line[0] == 'B'and not temp_line[0] == 'C'and not temp_line[0] == 'D'and not temp_line[0] == 'E'and not temp_line[0] == 'F':
+
+            if not TEMPORARY_MEMORY[0] == '':
+
+                for _ in range(24):
+                    del TEMPORARY_MEMORY[_][:]
+                flag = -1
+    return flag
+
+def split_the_base_into_a_single_one(lines):
+    # flag =-2 at start, flag = -1 for other flag = 0 for answers, flag = 1 for Question X, flag =2,3,4,5... for A,B,C,D...
+    flag = -2
+    start_for = True
+    for line in lines:
+        temp_line = line.replace(' ', "")
+        flag = check_end(line,flag, temp_line,start_for)
+        if temp_line.startswith('Question'):
+            flag = 1
+            #print(flag, ' ok3 ',line)
+        if (
+            temp_line.startswith('A.')
+            or temp_line.startswith('B.')
+            or temp_line.startswith('C.')
+            or temp_line.startswith('D.')
+            or temp_line.startswith('E.')
+            or temp_line.startswith('F.')
+            or temp_line.startswith('G.')
+        ):
+            flag += 1
+            #print(flag, ' ok1 ',line)
+
+        if temp_line.startswith('Answer:'):
+            flag = 0
+            #print(flag, ' ok ',line)
+        if start_for == True:
+            start_for = False
+        fill_data(line, flag)
+        # print(flag, line)
+    print(''.join(TEMPORARY_MEMORY[0]))
+
+'''
