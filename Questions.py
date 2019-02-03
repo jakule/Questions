@@ -104,14 +104,12 @@ def delete_strings_after_correct_answers(data_base, lines):
             temp_max, i, temp_data, data_base, temp_data_base
         )
 
+    return temp_data_base
 
-# info print
-# for i in range(len(temp_data_base)):
-#    print(temp_data_base[i][0],' ', temp_data_base[i][len(temp_data_base[i])-1])
-#    for j in range(len(temp_data_base[i])-1):
-#        if temp_data_base[i][j] != data_base[i][j]:
-#            print('wrong', i,' ',j,' ',temp_data_base[i][j],' ',data_base[i][j])
-
+def remove_questions_124_and_144(data_base):
+    del data_base[143]
+    del data_base[123]
+    return data_base
 
 def split_simple_question(data_base):
     options = defaultdict(
@@ -120,8 +118,7 @@ def split_simple_question(data_base):
     print(data_base)
     print(data_base[15][0:25])
     print(len(data_base))
-    # for i in range(len(data_base)):
-    for i in range(3):
+    for i in range(len(data_base)):
         print(len(data_base[i]))
         for y in range(len(data_base[i])):
             for z in options:
@@ -262,8 +259,9 @@ if __name__ == '__main__':
     lines = delete_empy_lines_at_beginning_of_the_document(lines)
     lines = delete_empy_lines_in_document(lines)
     data_base = split_the_base_into_a_single_one(lines)
-    delete_strings_after_correct_answers(data_base, lines)
-    # split_simple_question(data_base)
+    data_base = delete_strings_after_correct_answers(data_base, lines)
+    data_base = remove_questions_124_and_144(data_base)
+    split_simple_question(data_base)
     stop = time.time()
 
     print('The program worked for %.3f seconds' % (stop - start))
