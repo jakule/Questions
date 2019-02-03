@@ -18,32 +18,42 @@ class Question:
 def fill_data(line, flag):
     if (flag != -1) and flag != 0:
         TEMPORARY_MEMORY[flag].append(line)
-    if flag == 0 and not line.replace(' ', '') == '':
-        TEMPORARY_MEMORY[flag].append(line.replace(' ', ''))
+    if flag == 0 and not line.replace(' ', "") == "":
+        TEMPORARY_MEMORY[flag].append(line.replace(' ', ""))
 
 
 def check_end(line, flag, temp_line, start_for):
-    options = defaultdict(lambda: False, {'A': True, 'B': True, 'C': True, 'D': True, 'E': True, 'F': True, })
+    options = defaultdict(
+        lambda: False,
+        {'A': True, 'B': True, 'C': True, 'D': True, 'E': True, 'F': True},
+    )
 
     if temp_line.startswith('Question') and not start_for == True:
-        print(TEMPORARY_MEMORY[1][0:1], ' ', ''.join(TEMPORARY_MEMORY[0]))
+        print(TEMPORARY_MEMORY[1][0:1], ' ', "".join(TEMPORARY_MEMORY[0]))
         for _ in range(24):
             del TEMPORARY_MEMORY[_][:]
         flag = -1
 
-    if ':' in ''.join(TEMPORARY_MEMORY[0]) and temp_line != '':
+    if ':' in "".join(TEMPORARY_MEMORY[0]) and temp_line != "":
         print(options[temp_line[0]], '  ', temp_line[0])
 
-        if not temp_line[0] == ',' and not temp_line[0] == 'A' and not temp_line[0] == 'B' and not temp_line[
-                                                                                                       0] == 'C' and not \
-        temp_line[0] == 'D' and not temp_line[0] == 'E' and not temp_line[0] == 'F':
+        if (
+            not temp_line[0] == ','
+            and not temp_line[0] == 'A'
+            and not temp_line[0] == 'B'
+            and not temp_line[0] == 'C'
+            and not temp_line[0] == 'D'
+            and not temp_line[0] == 'E'
+            and not temp_line[0] == 'F'
+        ):
 
-            if not TEMPORARY_MEMORY[0] == '':
+            if not TEMPORARY_MEMORY[0] == "":
 
                 for _ in range(24):
                     del TEMPORARY_MEMORY[_][:]
                 flag = -1
     return flag
+
 
 def fill_temp_with_everything_after_answer(temp, data_base, i, y):
     for j in range(y, len(data_base[i])):
@@ -52,9 +62,10 @@ def fill_temp_with_everything_after_answer(temp, data_base, i, y):
         temp.remove(' ')
     return temp
 
+
 def fill_c_with_only_correct_answer(temp):
-    last_cell = ''.join(temp)
-    last_cell = last_cell[last_cell.index(':') + 1:]
+    last_cell = "".join(temp)
+    last_cell = last_cell[last_cell.index(':') + 1 :]
     f = [z for z, g in enumerate(last_cell) if g == ',' and z < 12]
     if len(f) == 0:
         last_cell = last_cell[:1]
@@ -70,11 +81,13 @@ def fill_c_with_only_correct_answer(temp):
         last_cell = last_cell[:11:2]
     return last_cell
 
-def fill_temp_data_after_answers(temp_max,i,temp_data, data_base, temp_data_base):
+
+def fill_temp_data_after_answers(temp_max, i, temp_data, data_base, temp_data_base):
     for z1 in range(temp_max):
         temp_data_base[i].append(data_base[i][z1])
     temp_data_base[i].append(temp_data)
     return temp_data_base
+
 
 def delete_strings_after_correct_answers(data_base, lines):
     max_range_for_base = count_lines_in_simple_question(lines)
@@ -87,17 +100,23 @@ def delete_strings_after_correct_answers(data_base, lines):
                 temp_data = fill_c_with_only_correct_answer(temp)
                 temp_max = y
 
-        temp_data_base = fill_temp_data_after_answers(temp_max,i,temp_data, data_base, temp_data_base)
+        temp_data_base = fill_temp_data_after_answers(
+            temp_max, i, temp_data, data_base, temp_data_base
+        )
 
-#info print
-    #for i in range(len(temp_data_base)):
-    #    print(temp_data_base[i][0],' ', temp_data_base[i][len(temp_data_base[i])-1])
-    #    for j in range(len(temp_data_base[i])-1):
-    #        if temp_data_base[i][j] != data_base[i][j]:
-    #            print('wrong', i,' ',j,' ',temp_data_base[i][j],' ',data_base[i][j])
+
+# info print
+# for i in range(len(temp_data_base)):
+#    print(temp_data_base[i][0],' ', temp_data_base[i][len(temp_data_base[i])-1])
+#    for j in range(len(temp_data_base[i])-1):
+#        if temp_data_base[i][j] != data_base[i][j]:
+#            print('wrong', i,' ',j,' ',temp_data_base[i][j],' ',data_base[i][j])
+
 
 def split_simple_question(data_base):
-    options = defaultdict(lambda: '0', {'A.': '1', 'B.': '2', 'C.': '2', 'D.': '3', 'E.': '4', 'F.': '5', })
+    options = defaultdict(
+        lambda: '0', {'A.': '1', 'B.': '2', 'C.': '2', 'D.': '3', 'E.': '4', 'F.': '5'}
+    )
     print(data_base)
     print(data_base[15][0:25])
     print(len(data_base))
@@ -109,6 +128,7 @@ def split_simple_question(data_base):
                 if z in data_base[i][y]:
                     print(data_base[i][y], i, y, z, options[z])
 
+
 def count_lines_in_simple_question(lines):
     count_question = -1
     for line in lines:
@@ -116,20 +136,22 @@ def count_lines_in_simple_question(lines):
             count_question += 1
     return count_question
 
+
 def remove_beginning_strings_in_question(temp_data_base):
-    remove_number=0
+    remove_number = 0
     for i in range(len(temp_data_base)):
         number_question = 1 + i
-        for y in range (4):
+        for y in range(4):
             if str(number_question) in temp_data_base[i][y]:
                 del temp_data_base[i][y]
-        for y in range (5):
-            if temp_data_base[i][y] == '':
-                remove_number +=1
-        del temp_data_base[i][:1+remove_number]
+        for y in range(5):
+            if temp_data_base[i][y] == "":
+                remove_number += 1
+        del temp_data_base[i][: 1 + remove_number]
         add = 'Question ' + str(number_question)
         temp_data_base[i].insert(0, str(add))
     return temp_data_base
+
 
 def split_the_base_into_a_single_one(lines):
     max_range_for_base = count_lines_in_simple_question(lines)
@@ -145,11 +167,12 @@ def split_the_base_into_a_single_one(lines):
     temp_data_base = remove_beginning_strings_in_question(temp_data_base)
     return temp_data_base
 
+
 def import_data_from_file():
     pdf_file = open('123.pdf', 'rb')
     read_pdf = PyPDF2.PdfFileReader(pdf_file)
     lines = []
-    #for page_now in range(45, 65):
+    # for page_now in range(45, 65):
     for page_now in range(read_pdf.getNumPages()):
         page_content = read_pdf.getPage(page_now).extractText()
         lines.extend(page_content.splitlines())
@@ -169,6 +192,7 @@ def remove_page_number(lines):
         else:
             lines_now.append(line)
     return lines_now
+
 
 def end_of_loop():
     raise StopIteration
@@ -210,7 +234,7 @@ def delete_empy_lines_at_beginning_of_the_document(lines):
 def delete_empy_lines_in_document(lines):
     lines_now = []
     for line in lines:
-        if line == '':
+        if line == "":
             continue
         else:
             lines_now.append(line)
