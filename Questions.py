@@ -3,6 +3,7 @@
 import PyPDF2
 import time
 import argparse
+import random
 from collections import defaultdict
 
 
@@ -69,11 +70,50 @@ def remove_questions_124_and_144(data_base):
     del data_base[143]
     del data_base[123]
     return data_base
+def chceck_data_in_temporary_memory(temporary_memory):
+    temp_sum = 0
+    for i in range(len(temporary_memory)):
+        a = len(temporary_memory[i][2])
+        b = len(temporary_memory[i][3])
+        c = len(temporary_memory[i][4])
+        d = len(temporary_memory[i][5])
+        e = len(temporary_memory[i][6])
+        f = len(temporary_memory[i][7])
+        if "B" in temporary_memory[i][1][0] and a < 2 and b < 2:
+            print("Not ok")
+        if "C" in temporary_memory[i][1][0] and a < 2 and b < 2 and c < 2:
+            print("Not ok")
+        if "D" in temporary_memory[i][1][0] and a < 2 and b < 2 and c < 2 and d < 2:
+            print("Not ok")
+        if (
+                "E" in temporary_memory[i][1][0]
+                and a < 2
+                and b < 2
+                and c < 2
+                and d < 2
+                and e < 2
+        ):
+            print("Not ok")
+        if (
+                "F" in temporary_memory[i][1][0]
+                and a < 2
+                and b < 2
+                and c < 2
+                and d < 2
+                and e < 2
+                and f < 2
+        ):
+            print("Not ok")
+        temp_sum = temp_sum + a + b + c + d + e + f
+    print("temp sum=", temp_sum)
 
+
+def create_temporary_memory(data_base):
+    temporary_memory = [[[] for _ in range(8)] for i in range(len(data_base))]
+    return temporary_memory
 
 def split_simple_question(data_base):
-    TEMPORARY_MEMORY = [[] for _ in range(8)]
-    temp_sum = 0
+    temporary_memory = create_temporary_memory(data_base)
     for i in range(len(data_base)):
 
         flag = 0
@@ -90,47 +130,26 @@ def split_simple_question(data_base):
                 flag = 6
             if data_base[i][y].startswith("F."):
                 flag = 7
-            TEMPORARY_MEMORY[flag].append(data_base[i][y])
-        TEMPORARY_MEMORY[1].append(data_base[i][len(data_base[i]) - 1])
+            temporary_memory[i][flag].append(data_base[i][y])
+        temporary_memory[i][1].append(data_base[i][len(data_base[i]) - 1])
+    chceck_data_in_temporary_memory(temporary_memory)
+    return temporary_memory
 
-        # checker
-        a = len(TEMPORARY_MEMORY[2])
-        b = len(TEMPORARY_MEMORY[3])
-        c = len(TEMPORARY_MEMORY[4])
-        d = len(TEMPORARY_MEMORY[5])
-        e = len(TEMPORARY_MEMORY[6])
-        f = len(TEMPORARY_MEMORY[7])
-        if "B" in TEMPORARY_MEMORY[1][0] and a < 2 and b < 2:
-            print("Not ok")
-        if "C" in TEMPORARY_MEMORY[1][0] and a < 2 and b < 2 and c < 2:
-            print("Not ok")
-        if "D" in TEMPORARY_MEMORY[1][0] and a < 2 and b < 2 and c < 2 and d < 2:
-            print("Not ok")
-        if (
-                "E" in TEMPORARY_MEMORY[1][0]
-                and a < 2
-                and b < 2
-                and c < 2
-                and d < 2
-                and e < 2
-        ):
-            print("Not ok")
-        if (
-                "F" in TEMPORARY_MEMORY[1][0]
-                and a < 2
-                and b < 2
-                and c < 2
-                and d < 2
-                and e < 2
-                and f < 2
-        ):
-            print("Not ok")
-        temp_sum = temp_sum + a + b + c + d + e + f
+def suffle_numbers(number_of_questions, temporary_memory):
+    random_list = list(range(len(temporary_memory)))
+    random.shuffle(random_list)
+    questions_memory = [[[random_list[i]] for _ in range(8)] for i in range(number_of_questions)]
+    return questions_memory
 
-        for _ in range(len(TEMPORARY_MEMORY)):
-            del TEMPORARY_MEMORY[_][:]
+def shuflle_questions(number_of_questions, temporary_memory):
+    questions_memory = suffle_numbers(number_of_questions, temporary_memory)
+    for i in range(number_of_questions):
+        a=questions_memory[i][0][0]
+        for j in range(len(temporary_memory[i])):
+            questions_memory[i][j]= temporary_memory[a][j]
+    chceck_data_in_temporary_memory(questions_memory)
+    return questions_memory
 
-    print("temp sum=", temp_sum)
 
 def count_lines_in_simple_question(lines):
     count_question = -1
@@ -151,7 +170,7 @@ def remove_beginning_strings_in_question(temp_data_base):
             if temp_data_base[i][y] == "":
                 remove_number += 1
         del temp_data_base[i][: 1 + remove_number]
-        add = "Question " + str(number_question)
+        add ='Question: ' + str(number_question)
         temp_data_base[i].insert(0, str(add))
     return temp_data_base
 
@@ -247,6 +266,7 @@ def delete_empy_lines_in_document(lines):
 if __name__ == "__main__":
 
     start = time.time()
+    number_of_questions = 50
     parser = argparse.ArgumentParser(description="Program for learning from script")
     parser.add_argument("-f", default="123.pdf")
     # , help='Write file name', required=True
@@ -267,7 +287,8 @@ if __name__ == "__main__":
     data_base = split_the_base_into_a_single_one(lines)
     data_base = delete_strings_after_correct_answers(data_base, lines)
     data_base = remove_questions_124_and_144(data_base)
-    split_simple_question(data_base)
+    temporary_memory = split_simple_question(data_base)
+    question_memory = shuflle_questions(number_of_questions, temporary_memory)
     stop = time.time()
 
     print("The program worked for %.3f seconds" % (stop - start))
