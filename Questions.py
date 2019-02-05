@@ -5,14 +5,12 @@ import time
 import argparse
 from collections import defaultdict
 
-TEMPORARY_MEMORY = [[] for _ in range(8)]
 
 
-class Question:
-    def __init__(self, contents, correct_answer):
-        self.contents = contents
-        self.possible_answers = []
-        self.correct_answer = correct_answer
+
+
+
+
 
 
 def fill_temp_with_everything_after_answer(temp, data_base, i, y):
@@ -74,6 +72,7 @@ def remove_questions_124_and_144(data_base):
 
 
 def split_simple_question(data_base):
+    TEMPORARY_MEMORY = [[] for _ in range(8)]
     temp_sum = 0
     for i in range(len(data_base)):
 
@@ -91,28 +90,9 @@ def split_simple_question(data_base):
                 flag = 6
             if data_base[i][y].startswith("F."):
                 flag = 7
-            if data_base[i][y].replace(" ", "") != "":
-                TEMPORARY_MEMORY[flag].append(data_base[i][y])
+            TEMPORARY_MEMORY[flag].append(data_base[i][y])
         TEMPORARY_MEMORY[1].append(data_base[i][len(data_base[i]) - 1])
-        print(
-            TEMPORARY_MEMORY[0][0],
-            " ",
-            TEMPORARY_MEMORY[1][0],
-            " Question:",
-            len(TEMPORARY_MEMORY[0]),
-            " A:",
-            len(TEMPORARY_MEMORY[2]),
-            " B:",
-            len(TEMPORARY_MEMORY[3]),
-            " C:",
-            len(TEMPORARY_MEMORY[4]),
-            " D:",
-            len(TEMPORARY_MEMORY[5]),
-            " E:",
-            len(TEMPORARY_MEMORY[6]),
-            " F:",
-            len(TEMPORARY_MEMORY[7]),
-        )
+
         # checker
         a = len(TEMPORARY_MEMORY[2])
         b = len(TEMPORARY_MEMORY[3])
@@ -127,29 +107,30 @@ def split_simple_question(data_base):
         if "D" in TEMPORARY_MEMORY[1][0] and a < 2 and b < 2 and c < 2 and d < 2:
             print("Not ok")
         if (
-            "E" in TEMPORARY_MEMORY[1][0]
-            and a < 2
-            and b < 2
-            and c < 2
-            and d < 2
-            and e < 2
+                "E" in TEMPORARY_MEMORY[1][0]
+                and a < 2
+                and b < 2
+                and c < 2
+                and d < 2
+                and e < 2
         ):
             print("Not ok")
         if (
-            "F" in TEMPORARY_MEMORY[1][0]
-            and a < 2
-            and b < 2
-            and c < 2
-            and d < 2
-            and e < 2
-            and f < 2
+                "F" in TEMPORARY_MEMORY[1][0]
+                and a < 2
+                and b < 2
+                and c < 2
+                and d < 2
+                and e < 2
+                and f < 2
         ):
             print("Not ok")
         temp_sum = temp_sum + a + b + c + d + e + f
+
         for _ in range(len(TEMPORARY_MEMORY)):
             del TEMPORARY_MEMORY[_][:]
-    print("temp sum=", temp_sum)
 
+    print("temp sum=", temp_sum)
 
 def count_lines_in_simple_question(lines):
     count_question = -1
