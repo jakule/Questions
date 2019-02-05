@@ -7,13 +7,6 @@ import random
 from collections import defaultdict
 
 
-
-
-
-
-
-
-
 def fill_temp_with_everything_after_answer(temp, data_base, i, y):
     for j in range(y, len(data_base[i])):
         temp.extend(data_base[i][j])
@@ -70,6 +63,8 @@ def remove_questions_124_and_144(data_base):
     del data_base[143]
     del data_base[123]
     return data_base
+
+
 def chceck_data_in_temporary_memory(temporary_memory):
     temp_sum = 0
     for i in range(len(temporary_memory)):
@@ -86,22 +81,22 @@ def chceck_data_in_temporary_memory(temporary_memory):
         if "D" in temporary_memory[i][1][0] and a < 2 and b < 2 and c < 2 and d < 2:
             print("Not ok")
         if (
-                "E" in temporary_memory[i][1][0]
-                and a < 2
-                and b < 2
-                and c < 2
-                and d < 2
-                and e < 2
+            "E" in temporary_memory[i][1][0]
+            and a < 2
+            and b < 2
+            and c < 2
+            and d < 2
+            and e < 2
         ):
             print("Not ok")
         if (
-                "F" in temporary_memory[i][1][0]
-                and a < 2
-                and b < 2
-                and c < 2
-                and d < 2
-                and e < 2
-                and f < 2
+            "F" in temporary_memory[i][1][0]
+            and a < 2
+            and b < 2
+            and c < 2
+            and d < 2
+            and e < 2
+            and f < 2
         ):
             print("Not ok")
         temp_sum = temp_sum + a + b + c + d + e + f
@@ -111,6 +106,7 @@ def chceck_data_in_temporary_memory(temporary_memory):
 def create_temporary_memory(data_base):
     temporary_memory = [[[] for _ in range(8)] for i in range(len(data_base))]
     return temporary_memory
+
 
 def split_simple_question(data_base):
     temporary_memory = create_temporary_memory(data_base)
@@ -135,18 +131,22 @@ def split_simple_question(data_base):
     chceck_data_in_temporary_memory(temporary_memory)
     return temporary_memory
 
+
 def suffle_numbers(number_of_questions, temporary_memory):
     random_list = list(range(len(temporary_memory)))
     random.shuffle(random_list)
-    questions_memory = [[[random_list[i]] for _ in range(8)] for i in range(number_of_questions)]
+    questions_memory = [
+        [[random_list[i]] for _ in range(8)] for i in range(number_of_questions)
+    ]
     return questions_memory
+
 
 def shuflle_questions(number_of_questions, temporary_memory):
     questions_memory = suffle_numbers(number_of_questions, temporary_memory)
     for i in range(number_of_questions):
-        a=questions_memory[i][0][0]
+        a = questions_memory[i][0][0]
         for j in range(len(temporary_memory[i])):
-            questions_memory[i][j]= temporary_memory[a][j]
+            questions_memory[i][j] = temporary_memory[a][j]
     chceck_data_in_temporary_memory(questions_memory)
     return questions_memory
 
@@ -170,7 +170,7 @@ def remove_beginning_strings_in_question(temp_data_base):
             if temp_data_base[i][y] == "":
                 remove_number += 1
         del temp_data_base[i][: 1 + remove_number]
-        add ='Question: ' + str(number_question)
+        add = "Question: " + str(number_question)
         temp_data_base[i].insert(0, str(add))
     return temp_data_base
 
@@ -262,23 +262,26 @@ def delete_empy_lines_in_document(lines):
             lines_now.append(line)
     return lines_now
 
+
 def ask_question(question_memory, number_of_questions):
     for i in range(2):
-        print(''.join(question_memory[i][0]))
-        for j in range(2,7):
-            print(''.join(question_memory[i][j]))
-        print('Do not tell anyone the correct answers are ',''.join(question_memory[i][1]))
+        print("".join(question_memory[i][0]))
+        for j in range(2, 7):
+            print("".join(question_memory[i][j]))
+        print(
+            "Do not tell anyone the correct answers are ",
+            "".join(question_memory[i][1]),
+        )
 
-
-        check= question_memory[i][1][0]
+        check = question_memory[i][1][0]
 
         test = input("enter correct answers: ")
         if test == check:
-            print ('Yes')
-            print(' ')
+            print("Yes")
+            print(" ")
         else:
-            print('Nope Try Again')
-            print(' ')
+            print("Nope Try Again")
+            print(" ")
 
 
 if __name__ == "__main__":
@@ -310,4 +313,3 @@ if __name__ == "__main__":
     stop = time.time()
     print("The program worked for %.3f seconds" % (stop - start))
     ask_question(question_memory, number_of_questions)
-
