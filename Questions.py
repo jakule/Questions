@@ -262,6 +262,24 @@ def delete_empy_lines_in_document(lines):
             lines_now.append(line)
     return lines_now
 
+def ask_question(question_memory, number_of_questions):
+    for i in range(2):
+        print(''.join(question_memory[i][0]))
+        for j in range(2,7):
+            print(''.join(question_memory[i][j]))
+        print('Do not tell anyone the correct answers are ',''.join(question_memory[i][1]))
+
+
+        check= question_memory[i][1][0]
+
+        test = input("enter correct answers: ")
+        if test == check:
+            print ('Yes')
+            print(' ')
+        else:
+            print('Nope Try Again')
+            print(' ')
+
 
 if __name__ == "__main__":
 
@@ -290,5 +308,6 @@ if __name__ == "__main__":
     temporary_memory = split_simple_question(data_base)
     question_memory = shuflle_questions(number_of_questions, temporary_memory)
     stop = time.time()
-
     print("The program worked for %.3f seconds" % (stop - start))
+    ask_question(question_memory, number_of_questions)
+
