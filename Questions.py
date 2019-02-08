@@ -2,10 +2,9 @@
 
 import PyPDF2
 import time
-import argparse
+import os
 import random
-from collections import defaultdict
-
+from shutil import get_terminal_size
 
 def fill_temp_with_everything_after_answer(temp, data_base, i, y):
     for j in range(y, len(data_base[i])):
@@ -66,7 +65,6 @@ def remove_questions_124_and_144(data_base):
 
 
 def chceck_data_in_temporary_memory(temporary_memory):
-    temp_sum = 0
     for i in range(len(temporary_memory)):
         a = len(temporary_memory[i][2])
         b = len(temporary_memory[i][3])
@@ -99,8 +97,6 @@ def chceck_data_in_temporary_memory(temporary_memory):
             and f < 2
         ):
             print("Not ok")
-        temp_sum = temp_sum + a + b + c + d + e + f
-    print("temp sum=", temp_sum)
 
 
 def create_temporary_memory(data_base):
@@ -136,8 +132,10 @@ def suffle_numbers(number_of_questions, temporary_memory):
     random_list = list(range(len(temporary_memory)))
     random.shuffle(random_list)
     questions_memory = [
-        [[random_list[i]] for _ in range(8)] for i in range(number_of_questions)
+        [[random_list[i]] for _ in range(9)] for i in range(number_of_questions)
     ]
+    for i in range(len(questions_memory)):
+        questions_memory[i][8]=False
     return questions_memory
 
 
@@ -150,6 +148,11 @@ def shuflle_questions(number_of_questions, temporary_memory):
     chceck_data_in_temporary_memory(questions_memory)
     return questions_memory
 
+def check_maximum_number_of_question(temporary_memory, number_of_questions):
+    if len(temporary_memory) < number_of_questions:
+        return len(temporary_memory)
+    else:
+        return number_of_questions
 
 def count_lines_in_simple_question(lines):
     count_question = -1
@@ -190,8 +193,8 @@ def split_the_base_into_a_single_one(lines):
     return temp_data_base
 
 
-def import_data_from_file():
-    pdf_file = open("123.pdf", "rb")
+def import_data_from_file(file_name):
+    pdf_file = open(file_name, "rb")
     read_pdf = PyPDF2.PdfFileReader(pdf_file)
     lines = []
     # for page_now in range(45, 65):
@@ -262,45 +265,57 @@ def delete_empy_lines_in_document(lines):
             lines_now.append(line)
     return lines_now
 
+def first_ask():
+    #file_name = str(input('Write file name: ').strip())
+    #number_of_questions = int(input('How many question you want?: ').strip())
+    #Temporary:
+    number_of_questions = 3
+    file_name ="123.pdf"
+    return number_of_questions, file_name
 
-def ask_question(question_memory, number_of_questions):
-    for i in range(2):
-        print("".join(question_memory[i][0]))
+def cls(): ###
+    os.system('cls' if os.name=='nt' else 'clear')
+
+def answer_question(correct_answer):
+    if correct_answer == ''.join(sorted(input('write an answer: '))).upper().strip():
+        print("\n" * get_terminal_size().lines, end='')
+        print("Correct")
+        return True
+    else:
+        print("\n" * get_terminal_size().lines, end='')
+        print("Nope Try Again")
+        return False
+
+def ask_question(questions_memory, number_of_questions):
+    for i in range(number_of_questions):
+        print("".join(questions_memory[i][0]))
         for j in range(2, 7):
-            print("".join(question_memory[i][j]))
+            print("".join(questions_memory[i][j]))
         print(
             "Do not tell anyone the correct answers are ",
-            "".join(question_memory[i][1]),
+            "".join(questions_memory[i][1]),
         )
 
-        check = question_memory[i][1][0]
+        questions_memory[i][8] = answer_question(questions_memory[i][1][0])
+    return questions_memory
 
-        test = input("enter correct answers: ")
-        if test == check:
-            print("Yes")
-            print(" ")
-        else:
-            print("Nope Try Again")
-            print(" ")
-
+def results(questions_memory, start, stop, number_of_questions):
+    correct_answers = 0
+    for i in range(len(questions_memory)):
+        if questions_memory[i][8] == True:
+            correct_answers +=  1
+    print("\n" * get_terminal_size().lines, end='')
+    print(correct_answers, 'questions right out of', number_of_questions)
+    print("The test was solved in %.1f seconds" % (stop - start))
+    a = '%.1f' % ((correct_answers / number_of_questions)*100)
+    b = '%.1f' % ((stop-start)/(number_of_questions))
+    print("It gives {} % and average time for answer was {} seconds".format(a,b))
 
 if __name__ == "__main__":
 
     start = time.time()
-    number_of_questions = 50
-    parser = argparse.ArgumentParser(description="Program for learning from script")
-    parser.add_argument("-f", default="123.pdf")
-    # , help='Write file name', required=True
-    args = parser.parse_args()
-
-    if args.f == "Write file name":
-        print("I can tell that no argument was given and I can deal with that here.")
-    elif args.f == "123.pdf":
-        print("Ok")
-    else:
-        print("I can not find it")
-
-    lines = import_data_from_file()
+    number_of_questions, file_name = first_ask()
+    lines = import_data_from_file(file_name)
     lines = remove_page_number(lines)
     lines = remove_section_page_footer(lines)
     lines = delete_empy_lines_at_beginning_of_the_document(lines)
@@ -309,7 +324,11 @@ if __name__ == "__main__":
     data_base = delete_strings_after_correct_answers(data_base, lines)
     data_base = remove_questions_124_and_144(data_base)
     temporary_memory = split_simple_question(data_base)
+    number_of_questions = check_maximum_number_of_question(temporary_memory, number_of_questions)
     question_memory = shuflle_questions(number_of_questions, temporary_memory)
     stop = time.time()
     print("The program worked for %.3f seconds" % (stop - start))
-    ask_question(question_memory, number_of_questions)
+    start = time.time()
+    questions_memory = ask_question(question_memory, number_of_questions)
+    stop = time.time()
+    results(questions_memory, start, stop, number_of_questions)
