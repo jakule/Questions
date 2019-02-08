@@ -6,6 +6,7 @@ import os
 import random
 from shutil import get_terminal_size
 
+
 def fill_temp_with_everything_after_answer(temp, data_base, i, y):
     for j in range(y, len(data_base[i])):
         temp.extend(data_base[i][j])
@@ -135,7 +136,7 @@ def suffle_numbers(number_of_questions, temporary_memory):
         [[random_list[i]] for _ in range(9)] for i in range(number_of_questions)
     ]
     for i in range(len(questions_memory)):
-        questions_memory[i][8]=False
+        questions_memory[i][8] = False
     return questions_memory
 
 
@@ -148,11 +149,13 @@ def shuflle_questions(number_of_questions, temporary_memory):
     chceck_data_in_temporary_memory(questions_memory)
     return questions_memory
 
+
 def check_maximum_number_of_question(temporary_memory, number_of_questions):
     if len(temporary_memory) < number_of_questions:
         return len(temporary_memory)
     else:
         return number_of_questions
+
 
 def count_lines_in_simple_question(lines):
     count_question = -1
@@ -265,26 +268,30 @@ def delete_empy_lines_in_document(lines):
             lines_now.append(line)
     return lines_now
 
+
 def first_ask():
-    #file_name = str(input('Write file name: ').strip())
-    #number_of_questions = int(input('How many question you want?: ').strip())
-    #Temporary:
+    # file_name = str(input('Write file name: ').strip())
+    # number_of_questions = int(input('How many question you want?: ').strip())
+    # Temporary:
     number_of_questions = 3
-    file_name ="123.pdf"
+    file_name = "123.pdf"
     return number_of_questions, file_name
 
-def cls(): ###
-    os.system('cls' if os.name=='nt' else 'clear')
+
+def cls():  ###
+    os.system("cls" if os.name == "nt" else "clear")
+
 
 def answer_question(correct_answer):
-    if correct_answer == ''.join(sorted(input('write an answer: '))).upper().strip():
-        print("\n" * get_terminal_size().lines, end='')
+    if correct_answer == "".join(sorted(input("write an answer: "))).upper().strip():
+        print("\n" * get_terminal_size().lines, end="")
         print("Correct")
         return True
     else:
-        print("\n" * get_terminal_size().lines, end='')
+        print("\n" * get_terminal_size().lines, end="")
         print("Nope Try Again")
         return False
+
 
 def ask_question(questions_memory, number_of_questions):
     for i in range(number_of_questions):
@@ -299,17 +306,19 @@ def ask_question(questions_memory, number_of_questions):
         questions_memory[i][8] = answer_question(questions_memory[i][1][0])
     return questions_memory
 
+
 def results(questions_memory, start, stop, number_of_questions):
     correct_answers = 0
     for i in range(len(questions_memory)):
         if questions_memory[i][8] == True:
-            correct_answers +=  1
-    print("\n" * get_terminal_size().lines, end='')
-    print(correct_answers, 'questions right out of', number_of_questions)
+            correct_answers += 1
+    print("\n" * get_terminal_size().lines, end="")
+    print(correct_answers, "questions right out of", number_of_questions)
     print("The test was solved in %.1f seconds" % (stop - start))
-    a = '%.1f' % ((correct_answers / number_of_questions)*100)
-    b = '%.1f' % ((stop-start)/(number_of_questions))
-    print("It gives {} % and average time for answer was {} seconds".format(a,b))
+    a = "%.1f" % ((correct_answers / number_of_questions) * 100)
+    b = "%.1f" % ((stop - start) / (number_of_questions))
+    print("It gives {} % and average time for answer was {} seconds".format(a, b))
+
 
 if __name__ == "__main__":
 
@@ -324,7 +333,9 @@ if __name__ == "__main__":
     data_base = delete_strings_after_correct_answers(data_base, lines)
     data_base = remove_questions_124_and_144(data_base)
     temporary_memory = split_simple_question(data_base)
-    number_of_questions = check_maximum_number_of_question(temporary_memory, number_of_questions)
+    number_of_questions = check_maximum_number_of_question(
+        temporary_memory, number_of_questions
+    )
     question_memory = shuflle_questions(number_of_questions, temporary_memory)
     stop = time.time()
     print("The program worked for %.3f seconds" % (stop - start))
