@@ -65,41 +65,6 @@ def remove_questions_124_and_144(data_base):
     return data_base
 
 
-def chceck_data_in_temporary_memory(temporary_memory):
-    for i in range(len(temporary_memory)):
-        a = len(temporary_memory[i][2])
-        b = len(temporary_memory[i][3])
-        c = len(temporary_memory[i][4])
-        d = len(temporary_memory[i][5])
-        e = len(temporary_memory[i][6])
-        f = len(temporary_memory[i][7])
-        if "B" in temporary_memory[i][1][0] and a < 2 and b < 2:
-            print("Not ok")
-        if "C" in temporary_memory[i][1][0] and a < 2 and b < 2 and c < 2:
-            print("Not ok")
-        if "D" in temporary_memory[i][1][0] and a < 2 and b < 2 and c < 2 and d < 2:
-            print("Not ok")
-        if (
-            "E" in temporary_memory[i][1][0]
-            and a < 2
-            and b < 2
-            and c < 2
-            and d < 2
-            and e < 2
-        ):
-            print("Not ok")
-        if (
-            "F" in temporary_memory[i][1][0]
-            and a < 2
-            and b < 2
-            and c < 2
-            and d < 2
-            and e < 2
-            and f < 2
-        ):
-            print("Not ok")
-
-
 def create_temporary_memory(data_base):
     temporary_memory = [[[] for _ in range(8)] for i in range(len(data_base))]
     return temporary_memory
@@ -125,7 +90,6 @@ def split_simple_question(data_base):
                 flag = 7
             temporary_memory[i][flag].append(data_base[i][y])
         temporary_memory[i][1].append(data_base[i][len(data_base[i]) - 1])
-    chceck_data_in_temporary_memory(temporary_memory)
     return temporary_memory
 
 
@@ -146,7 +110,6 @@ def shuflle_questions(number_of_questions, temporary_memory):
         a = questions_memory[i][0][0]
         for j in range(len(temporary_memory[i])):
             questions_memory[i][j] = temporary_memory[a][j]
-    chceck_data_in_temporary_memory(questions_memory)
     return questions_memory
 
 
