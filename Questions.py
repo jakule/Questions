@@ -22,7 +22,7 @@ def fill_c_with_only_correct_answer(temp):
     last_cell = "".join(temp)
     last_cell = last_cell[last_cell.index(":") + 1 :]
     cell = [i for i, j in enumerate(last_cell) if j == "," and i < 12]
-    if len(cell) == 0:
+    if not cell:
         last_cell = last_cell[:1]
     if len(cell) == 1:
         last_cell = last_cell[:3:2]
@@ -73,49 +73,38 @@ def remove_questions_124_and_144(data_base):
 
 def create_temporary_memory(data_base):
     """It creates a database for questions after filtering"""
-    temporary_memory = [[[] for _ in range(8)] for i in range(len(data_base))]
+    temporary_memory = [[[] for _ in range(8)] for _ in data_base]
     return temporary_memory
 
 
 def split_simple_question(data_base):
     """Divide the question into the question, answers and correct answers"""
+    questions_prefix = ["{}.".format(chr(x)) for x in range(ord('A'), ord('F') + 1)]
     temporary_memory = create_temporary_memory(data_base)
-    for i in range(len(data_base)):
-
-        flag = 0
+    for i, _ in enumerate(data_base):
         for j in range(len(data_base[i]) - 1):
-            if data_base[i][j].startswith("A."):
-                flag = 2
-            if data_base[i][j].startswith("B."):
-                flag = 3
-            if data_base[i][j].startswith("C."):
-                flag = 4
-            if data_base[i][j].startswith("D."):
-                flag = 5
-            if data_base[i][j].startswith("E."):
-                flag = 6
-            if data_base[i][j].startswith("F."):
-                flag = 7
-            temporary_memory[i][flag].append(data_base[i][j])
+            prefix = data_base[i][j][:2]
+            idx = questions_prefix.index(prefix)
+            temporary_memory[i][idx].append(data_base[i][j])
         temporary_memory[i][1].append(data_base[i][len(data_base[i]) - 1])
     return temporary_memory
 
 
-def suffle_numbers(number_of_questions, temporary_memory):
+def shuffle_numbers(number_of_questions, temporary_memory):
     """Shuffle tasks who are going to use"""
     random_list = list(range(len(temporary_memory)))
     random.shuffle(random_list)
     questions_memory = [
         [[random_list[i]] for _ in range(9)] for i in range(number_of_questions)
     ]
-    for i in range(len(questions_memory)):
-        questions_memory[i][8] = False
+    for question_memory in questions_memory:
+        question_memory[8] = False
     return questions_memory
 
 
-def shuflle_questions(number_of_questions, temporary_memory):
-    """Shufle questions"""
-    questions_memory = suffle_numbers(number_of_questions, temporary_memory)
+def shuffle_questions(number_of_questions, temporary_memory):
+    """Shuffle questions"""
+    questions_memory = shuffle_numbers(number_of_questions, temporary_memory)
     for i in range(number_of_questions):
         question_number = questions_memory[i][0][0]
         for j in range(len(temporary_memory[i])):
@@ -217,28 +206,28 @@ def remove_section_page_footer(lines):
 
 
 def delete_page_footer(lines, temp_lines):
-    """Delete page footer in file"""
+    """Delete page footer in the file"""
     lines_now = []
     flag = True
     for line in lines:
         for wrong_lines in temp_lines:
             if line.replace(" ", "") == wrong_lines.replace(" ", ""):
                 flag = False
-        if flag == True:
+        if flag:
             lines_now.append(line)
         else:
             flag = True
     return lines_now
 
 
-def delete_empy_lines_at_beginning_of_the_document(lines):
+def delete_empty_lines_at_beginning_of_the_document(lines):
     """Delete empty lines"""
     while not lines[0].replace(" ", "").startswith("Question"):
         del lines[0]
     return lines
 
 
-def delete_empy_lines_in_document(lines):
+def delete_empty_lines_in_document(lines):
     """Delete empty lines"""
     lines_now = []
     for line in lines:
@@ -269,36 +258,35 @@ def answer_question(correct_answer):
     if correct_answer == "".join(sorted(input("write an answer: "))).upper().strip():
         print("Correct")
         return True
-    else:
-        print("Nope Try Again")
-        return False
+    print("Nope Try Again")
+    return False
 
 
 def ask_question(questions_memory, number_of_questions):
     """Function showing content"""
-    for i in range(number_of_questions):
-        print("".join(questions_memory[i][0]))
+    for question in number_of_questions:
+        print("".join(question[0]))
         for j in range(2, 7):
-            print("".join(questions_memory[i][j]))
+            print("".join(question[j]))
         print(
             "Do not tell anyone the correct answers are ",
-            "".join(questions_memory[i][1]),
+            "".join(question[1]),
         )
 
-        questions_memory[i][8] = answer_question(questions_memory[i][1][0])
+        question[8] = answer_question(question[1][0])
     return questions_memory
 
 
 def results(questions_memory, start, stop, number_of_questions):
     """Show statistic after cycle of learning"""
     correct_answers = 0
-    for i in range(len(questions_memory)):
-        if questions_memory[i][8] == True:
+    for question_memory in questions_memory:
+        if question_memory[8]:
             correct_answers += 1
     print(correct_answers, "questions right out of", number_of_questions)
     print("The test was solved in %.1f seconds" % (stop - start))
     effectiveness = "%.1f" % ((correct_answers / number_of_questions) * 100)
-    speed_rate = "%.1f" % ((stop - start) / (number_of_questions))
+    speed_rate = "%.1f" % ((stop - start) / number_of_questions)
     print(
         "It gives {} % and average time for answer was {} seconds".format(
             effectiveness, speed_rate
@@ -313,8 +301,8 @@ def main():
     lines = import_data_from_file(file_name)
     lines = remove_page_number(lines)
     lines = remove_section_page_footer(lines)
-    lines = delete_empy_lines_at_beginning_of_the_document(lines)
-    lines = delete_empy_lines_in_document(lines)
+    lines = delete_empty_lines_at_beginning_of_the_document(lines)
+    lines = delete_empty_lines_in_document(lines)
     data_base = split_the_base_into_a_single_one(lines)
     data_base = delete_strings_after_correct_answers(data_base, lines)
     data_base = remove_questions_124_and_144(data_base)
@@ -322,7 +310,7 @@ def main():
     number_of_questions = check_maximum_number_of_question(
         temporary_memory, number_of_questions
     )
-    question_memory = shuflle_questions(number_of_questions, temporary_memory)
+    question_memory = shuffle_questions(number_of_questions, temporary_memory)
     stop = time.time()
     print("The program worked for %.3f seconds" % (stop - start))
     start = time.time()
