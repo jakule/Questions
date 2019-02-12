@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """A program for learning content from a script"""
-
+import re
 import time
 import os
 import random
@@ -310,11 +310,18 @@ def parse_document(doc: str):
             break
 
 
+def remove_clutter(doc: str) -> str:
+    return re.sub(
+        "ACP - \d* JIRA   ADMINISTRATION     \d*   CertMagic.net", "", doc, re.MULTILINE
+    )
+
+
 def main():
     """A function that calls all intermediate functions"""
     start = time.time()
     number_of_questions, file_name = read_info()
     lines = import_data_from_file(file_name)
+    lines = remove_clutter(lines)
     parse_document(lines)
     # print(lines)
     # lines = remove_page_number(lines)
