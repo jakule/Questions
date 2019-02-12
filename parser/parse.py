@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
-
-"""A program for learning content from a script"""
+import logging
 import re
-import time
 import os
 import random
+from typing import List
 
-import PyPDF2
+from parser.question import Question
 
 
 def fill_temp_with_everything_after_answer(temp, data_base, i, k):
@@ -162,23 +160,6 @@ def split_the_base_into_a_single_one(lines):
     return temp_data_base
 
 
-def import_data_from_file(file_name: str) -> str:
-    """Read file"""
-    pdf_file = open(file_name, "rb")
-    read_pdf = PyPDF2.PdfFileReader(pdf_file)
-    doc: str = ""
-    # for page_now in range(45, 65):
-    for page_now in range(read_pdf.getNumPages()):
-        page_content: str = read_pdf.getPage(page_now).extractText()
-        page_content = page_content.strip(" \n")
-        # page_content = " ".join(page_content.splitlines())
-        if page_content:
-            doc += page_content
-    # lines.extend(a for page_now in range(read_pdf.getNumPages())
-    # for a in read_pdf.getPage(page_now).extractText().splitlines())
-    return doc
-
-
 def remove_page_number(lines):
     """Finds and deletes consecutive page numbers"""
     lines_now = []
@@ -242,16 +223,6 @@ def delete_empty_lines_in_document(lines):
     return lines_now
 
 
-def read_info():
-    """Reading the file name and how many questions should it ask"""
-    # file_name = str(input('Write file name: ').strip())
-    # number_of_questions = int(input('How many question you want?: ').strip())
-    # Temporary:
-    number_of_questions = 3
-    file_name = "123.pdf"
-    return number_of_questions, file_name
-
-
 def cls():
     """Function console clearing"""
     os.system("cls" if os.name == "nt" else "clear")
@@ -295,54 +266,28 @@ def results(questions_memory, start, stop, number_of_questions):
     )
 
 
-def parse_document(doc: str):
+def parse_document(doc: str) -> List[Question]:
+    questions: List[Question] = []
     start = 0
     while True:
         start = doc.find("Question ", start)
         if start != -1:
             end = doc.find("\nA.", start)
             if end != -1:
-                print(" ".join(doc[start:end].splitlines()))
+                q = Question()
+                question = "".join(doc[start:end].splitlines())
+                q.question = question
+                questions.append(q)
                 start = start + 1
             else:
+                logging.debug("skipping A.")
                 break
         else:
             break
+    return questions
 
 
 def remove_clutter(doc: str) -> str:
     return re.sub(
-        "ACP - \d* JIRA   ADMINISTRATION     \d*   CertMagic.net", "", doc, re.MULTILINE
+        r"ACP *- *\d* JIRA +ADMINISTRATION *\d* *CertMagic.net", "", doc, re.MULTILINE
     )
-
-
-def main():
-    """A function that calls all intermediate functions"""
-    start = time.time()
-    number_of_questions, file_name = read_info()
-    lines = import_data_from_file(file_name)
-    lines = remove_clutter(lines)
-    parse_document(lines)
-    # print(lines)
-    # lines = remove_page_number(lines)
-    # lines = remove_section_page_footer(lines)
-    # lines = delete_empty_lines_at_beginning_of_the_document(lines)
-    # lines = delete_empty_lines_in_document(lines)
-    # data_base = split_the_base_into_a_single_one(lines)
-    # data_base = delete_strings_after_correct_answers(data_base, lines)
-    # data_base = remove_questions_124_and_144(data_base)
-    # temporary_memory = split_simple_question(data_base)
-    # number_of_questions = check_maximum_number_of_question(
-    #     temporary_memory, number_of_questions
-    # )
-    # question_memory = shuffle_questions(number_of_questions, temporary_memory)
-    stop = time.time()
-    print("The program worked for %.3f seconds" % (stop - start))
-    # start = time.time()
-    # questions_memory = ask_question(question_memory, number_of_questions)
-    # stop = time.time()
-    # results(questions_memory, start, stop, number_of_questions)
-
-
-if __name__ == "__main__":
-    main()
