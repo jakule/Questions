@@ -5,6 +5,7 @@
 import time
 import os
 import random
+
 import PyPDF2
 
 
@@ -79,7 +80,7 @@ def create_temporary_memory(data_base):
 
 def split_simple_question(data_base):
     """Divide the question into the question, answers and correct answers"""
-    questions_prefix = ["{}.".format(chr(x)) for x in range(ord('A'), ord('F') + 1)]
+    questions_prefix = ["{}.".format(chr(x)) for x in range(ord("A"), ord("F") + 1)]
     temporary_memory = create_temporary_memory(data_base)
     for i, _ in enumerate(data_base):
         for j in range(len(data_base[i]) - 1):
@@ -161,18 +162,21 @@ def split_the_base_into_a_single_one(lines):
     return temp_data_base
 
 
-def import_data_from_file(file_name):
+def import_data_from_file(file_name: str) -> str:
     """Read file"""
     pdf_file = open(file_name, "rb")
     read_pdf = PyPDF2.PdfFileReader(pdf_file)
-    lines = []
+    doc: str = ""
     # for page_now in range(45, 65):
     for page_now in range(read_pdf.getNumPages()):
-        page_content = read_pdf.getPage(page_now).extractText()
-        lines.extend(page_content.splitlines())
+        page_content: str = read_pdf.getPage(page_now).extractText()
+        page_content = page_content.strip(" \n")
+        # page_content = " ".join(page_content.splitlines())
+        if page_content:
+            doc += page_content
     # lines.extend(a for page_now in range(read_pdf.getNumPages())
     # for a in read_pdf.getPage(page_now).extractText().splitlines())
-    return lines
+    return doc
 
 
 def remove_page_number(lines):
@@ -268,10 +272,7 @@ def ask_question(questions_memory, number_of_questions):
         print("".join(question[0]))
         for j in range(2, 7):
             print("".join(question[j]))
-        print(
-            "Do not tell anyone the correct answers are ",
-            "".join(question[1]),
-        )
+        print("Do not tell anyone the correct answers are ", "".join(question[1]))
 
         question[8] = answer_question(question[1][0])
     return questions_memory
@@ -294,29 +295,46 @@ def results(questions_memory, start, stop, number_of_questions):
     )
 
 
+def parse_document(doc: str):
+    start = 0
+    while True:
+        start = doc.find("Question ", start)
+        if start != -1:
+            end = doc.find("\nA.", start)
+            if end != -1:
+                print(" ".join(doc[start:end].splitlines()))
+                start = start + 1
+            else:
+                break
+        else:
+            break
+
+
 def main():
     """A function that calls all intermediate functions"""
     start = time.time()
     number_of_questions, file_name = read_info()
     lines = import_data_from_file(file_name)
-    lines = remove_page_number(lines)
-    lines = remove_section_page_footer(lines)
-    lines = delete_empty_lines_at_beginning_of_the_document(lines)
-    lines = delete_empty_lines_in_document(lines)
-    data_base = split_the_base_into_a_single_one(lines)
-    data_base = delete_strings_after_correct_answers(data_base, lines)
-    data_base = remove_questions_124_and_144(data_base)
-    temporary_memory = split_simple_question(data_base)
-    number_of_questions = check_maximum_number_of_question(
-        temporary_memory, number_of_questions
-    )
-    question_memory = shuffle_questions(number_of_questions, temporary_memory)
+    parse_document(lines)
+    # print(lines)
+    # lines = remove_page_number(lines)
+    # lines = remove_section_page_footer(lines)
+    # lines = delete_empty_lines_at_beginning_of_the_document(lines)
+    # lines = delete_empty_lines_in_document(lines)
+    # data_base = split_the_base_into_a_single_one(lines)
+    # data_base = delete_strings_after_correct_answers(data_base, lines)
+    # data_base = remove_questions_124_and_144(data_base)
+    # temporary_memory = split_simple_question(data_base)
+    # number_of_questions = check_maximum_number_of_question(
+    #     temporary_memory, number_of_questions
+    # )
+    # question_memory = shuffle_questions(number_of_questions, temporary_memory)
     stop = time.time()
     print("The program worked for %.3f seconds" % (stop - start))
-    start = time.time()
-    questions_memory = ask_question(question_memory, number_of_questions)
-    stop = time.time()
-    results(questions_memory, start, stop, number_of_questions)
+    # start = time.time()
+    # questions_memory = ask_question(question_memory, number_of_questions)
+    # stop = time.time()
+    # results(questions_memory, start, stop, number_of_questions)
 
 
 if __name__ == "__main__":
