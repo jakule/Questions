@@ -298,5 +298,8 @@ def parse_document(doc: str) -> List[Question]:
 
 def remove_clutter(doc: str) -> str:
     return re.sub(
-        r"ACP *- *\d* JIRA +ADMINISTRATION *\d* *CertMagic.net", "", doc, re.MULTILINE
+        r"ACP\s*-\s*\d*\s*JIRA\s+ADMINISTRATION\s*\d*\s*CertMagic.net",
+        "",
+        doc,
+        flags=re.MULTILINE,
     )
