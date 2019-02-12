@@ -1,6 +1,9 @@
 from typing import List
 
+from attr import dataclass
 
+
+@dataclass
 class Question:
     """ Struct describing a question """
 

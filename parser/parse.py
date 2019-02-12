@@ -266,24 +266,33 @@ def results(questions_memory, start, stop, number_of_questions):
     )
 
 
+def parse_question(question: str) -> Question:
+    # TODO not dataclass expert, but line below looks bad ;/
+    q = Question("", [], -1)
+    idx = question.find("A. ")
+    assert idx != -1
+    q.question = question[:idx]
+    for aws in ["{}. ".format(chr(x)) for x in range(ord("B"), ord("Z") + 1)]:
+        q_end = question.find(aws, idx + 1)
+        if q_end == -1:
+            break
+        q.answers.append(question[idx:q_end])
+        idx = q_end
+    return q
+
+
 def parse_document(doc: str) -> List[Question]:
     questions: List[Question] = []
-    start = 0
+    start = doc.find("Question ")
     while True:
-        start = doc.find("Question ", start)
-        if start != -1:
-            end = doc.find("\nA.", start)
-            if end != -1:
-                q = Question()
-                question = "".join(doc[start:end].splitlines())
-                q.question = question
-                questions.append(q)
-                start = start + 1
-            else:
-                logging.debug("skipping A.")
-                break
-        else:
+        end = doc.find("Question ", start + 1)
+        if end == -1:
             break
+        q_str = "".join(doc[start:end].splitlines())
+        q = parse_question(q_str)
+        questions.append(q)
+        start = end
+
     return questions
 
 

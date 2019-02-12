@@ -8,7 +8,7 @@ from parser.pdf_reader import read_pdf_file
 
 
 def main():
-    """A function that calls all intermediate functions"""
+    """Main program function"""
     start = time.time()
     # TODO: Read from cmd
     file_name = "123.pdf"
@@ -19,6 +19,8 @@ def main():
     print("The program worked for %.3f seconds" % (stop - start))
     for q in questions:
         print(q.question)
+        for a in q.answers:
+            print("\t{}".format(a))
     # start = time.time()
     # questions_memory = ask_question(question_memory, number_of_questions)
     # stop = time.time()
